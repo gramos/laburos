@@ -39,6 +39,15 @@ def each_hiring_post(thread)
   end
 end
 
+def candidate_post?(post)
+  text = post.fetch("text", "").to_s.downcase
+  terms = ["ruby", "rails", "backend", "software engineer",
+           "product engineer", "platform engineer",
+           "founding engineer", "infrastructure engineer"]
+
+  terms.any? { |term| text.include?(term) }
+end
+
 def main
   thread = latest_hiring_thread
   abort "No Who is hiring? thread found." unless thread
@@ -46,6 +55,8 @@ def main
   puts thread.fetch("title")
   puts "https://news.ycombinator.com/item?id=#{thread.fetch('id')}"
   each_hiring_post(thread) do |post|
+    next unless candidate_post?(post)
+
     puts
     puts "https://news.ycombinator.com/item?id=#{post.fetch('id')}"
     puts post.fetch("text", "")
