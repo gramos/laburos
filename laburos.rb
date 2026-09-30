@@ -29,15 +29,30 @@ def latest_hiring_thread
   nil
 end
 
-if __FILE__ == $PROGRAM_NAME
-  begin
-    thread = latest_hiring_thread
-    abort "No Who is hiring? thread found." unless thread
+def each_hiring_post(thread)
+  thread.fetch("kids", []).each do |id|
+    post = fetch_json("item/#{id}")
+    next if post.nil? || post["deleted"] || post["dead"]
+    next unless post["type"] == "comment"
 
-    puts thread.fetch("title")
-    puts "https://news.ycombinator.com/item?id=#{thread.fetch('id')}"
-  rescue SocketError, SystemCallError, Timeout::Error, OpenSSL::SSL::SSLError,
-         Net::HTTPExceptions, JSON::ParserError => error
-    abort "Could not fetch the hiring thread: #{error.message}"
+    yield post
   end
 end
+
+def main
+  thread = latest_hiring_thread
+  abort "No Who is hiring? thread found." unless thread
+
+  puts thread.fetch("title")
+  puts "https://news.ycombinator.com/item?id=#{thread.fetch('id')}"
+  each_hiring_post(thread) do |post|
+    puts
+    puts "https://news.ycombinator.com/item?id=#{post.fetch('id')}"
+    puts post.fetch("text", "")
+  end
+rescue SocketError, SystemCallError, Timeout::Error, OpenSSL::SSL::SSLError,
+       Net::HTTPExceptions, JSON::ParserError => error
+  abort "Could not fetch the hiring thread: #{error.message}"
+end
+
+main if __FILE__ == $PROGRAM_NAME
