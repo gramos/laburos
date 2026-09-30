@@ -9,8 +9,23 @@ CRuby first and experimentation with Spinel afterward.
 
 ## Current status
 
-The project is in its initial setup stage. No application code is implemented
-yet.
+The first step finds the latest Hacker News **“Who is hiring?”** thread and
+prints its title and link. Fetching job posts, filtering, tracking, HTML output,
+and email notifications are still planned.
+
+## Run
+
+Requires Ruby and an internet connection. Tested with CRuby 3.3.1; no additional
+gems are needed.
+
+```sh
+ruby laburos.rb
+```
+
+The script uses the [official Hacker News API](https://github.com/HackerNews/API)
+to check `whoishiring` submissions from newest to oldest by ID, skipping deleted
+or dead items and unrelated posts. It stops at the first matching thread.
+Spinel compatibility has not been tested yet.
 
 ## Planned MVP
 
